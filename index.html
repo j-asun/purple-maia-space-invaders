@@ -1,4 +1,4 @@
-<html>
+  <html>
 <head>
 <title>My First Phaser Game</title>
     <style>
@@ -10,16 +10,16 @@
 <body>
 
 <div id="game"></div>
+<script src="assets/js/phaser.js"></script>
 
-    
-    
+
 <script>
 /* global Phaser, game */
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 
-    
+    game.load.image('bullet', 'assets/games/invaders/bullet.png');
     game.load.image('enemyBullet', 'assets/games/invaders/enemy-bullet.png');
     game.load.spritesheet('invader', 'assets/games/invaders/invader32x32x4.png', 32, 32);
     game.load.image('ship', 'assets/games/invaders/player.png');
@@ -29,7 +29,8 @@ function preload() {
 
 }
 
-
+var player;
+var aliens;
 var bullets;
 var bulletTime = 0;
 var cursors;
@@ -82,7 +83,7 @@ function create() {
     aliens.enableBody = true;
     aliens.physicsBodyType = Phaser.Physics.ARCADE;
 
-    // createAliens();
+   createAliens();
 
     //  The score
     scoreString = 'Score : ';
@@ -97,7 +98,7 @@ function create() {
     stateText.anchor.setTo(0.5, 0.5);
     stateText.visible = false;
 
-    for (var i = 0; i < 3; i++) 
+    for (var i = 0; i < 3; i++)
     {
         var ship = lives.create(game.world.width - 100 + (30 * i), 60, 'ship');
         ship.anchor.setTo(0.5, 0.5);
@@ -113,9 +114,9 @@ function create() {
     //  And some controls to play the game with
     cursors = game.input.keyboard.createCursorKeys();
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    
+
 }
-    
+
 function createAliens () {
 
         for (var y = 0; y < 4; y++)
@@ -142,11 +143,15 @@ function createAliens () {
 
     function setupInvader (invader) {
 
-        
+        invader.anchor.x = 0.5;
+        invader.anchor.y = 0.5;
+        inavder.animations.add('kaboom');
 
     }
 
-
+function descend() {
+  aliens.y += 10;
+}
 
 
 
@@ -230,7 +235,7 @@ function collisionHandler (bullet, alien) {
 }
 
 function enemyHitsPlayer (player,bullet) {
-    
+
     bullet.kill();
 
     live = lives.getFirstAlive();
@@ -276,7 +281,7 @@ function enemyFires () {
 
     if (enemyBullet && livingEnemies.length > 0)
     {
-        
+
         var random=game.rnd.integerInRange(0,livingEnemies.length-1);
 
         // randomly select one of them
@@ -316,6 +321,15 @@ function resetBullet (bullet) {
 
 }
 
+function restart() {
+  lives.callAll('revive');
+
+  aliens.removeAll();
+  creatAliens();
+
+  player.revive();
+  stateText.visible = false;
+}
 
 </script>
 
